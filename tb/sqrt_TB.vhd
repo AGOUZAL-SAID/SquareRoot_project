@@ -14,7 +14,7 @@ end entity;
 
 architecture sqrt_TB of TB is
 
-    component newton is
+    component it_sqrt is
     generic (
         NBITS : integer := 32
     );
@@ -43,7 +43,7 @@ architecture sqrt_TB of TB is
     constant test : table (0 to N_test-1) := (to_unsigned(3,2*NBITS),to_unsigned(15,2*NBITS),to_unsigned(127,2*NBITS), x"00000000FFFFFFFF") ;
     constant expected : table (0 to N_test-1) :=(to_unsigned(1,2*NBITS),to_unsigned(3,2*NBITS),to_unsigned(11,2*NBITS),to_unsigned(65535,2*NBITS))   ;
     begin 
-    UUT : newton 
+    UUT : it_sqrt 
         generic map(NBITS =>NBITS)
         port map (
             reset   => reset,
