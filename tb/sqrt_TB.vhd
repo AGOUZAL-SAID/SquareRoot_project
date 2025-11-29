@@ -31,6 +31,7 @@ architecture sqrt_TB of TB is
 
 
     constant  N_test  : integer := 5;
+    constant  PIPE_LINE  : integer := 1;
     signal reset   : std_logic   ;
     signal stop_sim: std_logic   ;
     signal clk     : std_logic :='0'   ;
@@ -43,7 +44,7 @@ architecture sqrt_TB of TB is
     constant test : table (0 to N_test-1) := (to_unsigned(3,2*NBITS),to_unsigned(15,2*NBITS),to_unsigned(127,2*NBITS), x"00000000FFFFFFFF",x"FFFFFFFFFFFFFFFF" ) ;
     constant expected : table (0 to N_test-1) :=(to_unsigned(1,2*NBITS),to_unsigned(3,2*NBITS),to_unsigned(11,2*NBITS),to_unsigned(65535,2*NBITS), x"00000000FFFFFFFF" ) ;
     begin 
-    UUT : entity work.it_sqrt(a2) 
+    UUT : entity work.it_sqrt(a3) 
         generic map(NBITS =>NBITS)
         port map (
             reset   => reset,
@@ -66,31 +67,57 @@ architecture sqrt_TB of TB is
     testing : process 
     begin
     wait until  (reset ='1');
+    if (PIPE_LINE = 0) then
+        for i in 0 to N_test-1 loop 
+            start <='0';
+            wait on clk until  rising_edge(clk);
 
-    for i in 0 to N_test-1 loop 
-        start <='0';
-        wait on clk until  rising_edge(clk);
+            A <= std_logic_vector(test(i));
+            start <= '1';
 
-        A <= std_logic_vector(test(i));
-        start <= '1';
-
-        wait  until (finished = '1');
+            wait  until (finished = '1');
 
 
-        if (unsigned(result)= expected(i)) then 
-            report "test number :" & integer'image(i) & " done succesfully" ;
-            if (i=N_test-1) then 
-                stop_sim <= '1';
+            if (unsigned(result)= expected(i)) then 
+                report "test number :" & integer'image(i) & " done succesfully" ;
+                if (i=N_test-1) then 
+                    stop_sim <= '1';
+                end if ;
+
+            else
+                report "test number :" & integer'image(i) & " failed";
+                if (i=N_test-1) then 
+                    stop_sim <= '1';
+                end if ;
             end if ;
+        end loop;
 
-        else
-            report "test number :" & integer'image(i) & " failed";
-            if (i=N_test-1) then 
-                stop_sim <= '1';
+    else
+        for i in 0 to N_test-1 loop
+            start <= '1';
+            A <= std_logic_vector(test(i));
+            wait  until  rising_edge(clk);
+        end loop;
+        if (finished = '1') then
+            report "testage";
+        end if;
+        wait until finished = '1';
+        for i in 0 to N_test-1 loop
+            wait until  rising_edge(clk);
+            if (unsigned(result)= expected(i)) then 
+                report "test number :" & integer'image(i) & " done succesfully" ;
+                if (i=N_test-1) then 
+                    stop_sim <= '1';
+                end if ;
+
+            else
+                report "test number :" & integer'image(i) & " failed";
+                if (i=N_test-1) then 
+                    stop_sim <= '1';
+                end if ;
             end if ;
-        end if ;
-
-    end loop;
+        end loop;
+    end if ;
     end process;
     reset <= '0','1' after 30 ns;
 end sqrt_TB;
