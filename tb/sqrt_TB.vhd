@@ -35,7 +35,7 @@ architecture sqrt_TB of TB is
     signal stop_sim: std_logic   ;
     signal clk     : std_logic :='0'   ;
     signal start   : std_logic   ;
-    signal A       : std_logic_vector  (2*NBITS-1 downto 0 ) ;
+    signal A       : std_logic_vector  (2*NBITS-1 downto 0 ) := x"0000000000000000" ;
     signal result  : std_logic_vector  (NBITS-1 downto 0 )   ; 
     signal finished: std_logic   ;   
 
@@ -43,7 +43,7 @@ architecture sqrt_TB of TB is
     constant test : table (0 to N_test-1) := (to_unsigned(3,2*NBITS),to_unsigned(15,2*NBITS),to_unsigned(127,2*NBITS), x"00000000FFFFFFFF",x"FFFFFFFFFFFFFFFF" ) ;
     constant expected : table (0 to N_test-1) :=(to_unsigned(1,2*NBITS),to_unsigned(3,2*NBITS),to_unsigned(11,2*NBITS),to_unsigned(65535,2*NBITS), x"00000000FFFFFFFF" ) ;
     begin 
-    UUT : it_sqrt 
+    UUT : entity work.it_sqrt(a2) 
         generic map(NBITS =>NBITS)
         port map (
             reset   => reset,
