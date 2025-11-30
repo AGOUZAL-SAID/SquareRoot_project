@@ -53,7 +53,6 @@ architecture a3 of it_sqrt is
                                 if (start = '0') then 
                                     finished <= '0' ;  
                                     state <= S_WAIT;
-                                    finished   <= '0' ;
                                end if ;
                 
                 when others => null;
