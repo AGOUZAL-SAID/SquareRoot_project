@@ -1,7 +1,6 @@
 library ieee ;
 use ieee.std_logic_1164.all ;
 use ieee.numeric_std.all ;
-use ieee.math_real.all;
 entity it_sqrt is
     generic(NBITS : integer := 32) ;
     port (
@@ -37,20 +36,21 @@ architecture a3 of it_sqrt is
     begin
         if (reset='0') then
             state      <= S_WAIT ; 
+            finished <= '0' ;
         elsif (rising_edge(clk)) then
             case( state ) is
                 when S_WAIT => if (start = '1') then 
                                 state <= S_COMP ;
-                                counter <= 0;
                                 end if ;            
+                                counter <= 0;
                 when S_COMP =>  counter <= counter + 1;
                                 if (counter = NBITS-1) then
                                     state <= S_FIN ;
+                                    finished <=  '1' ;
                                 end if ;
 
                 
-                when S_FIN  =>  finished <=  '1' ;
-                                if (start = '0') then 
+                when S_FIN  =>  if (start = '0') then 
                                     finished <= '0' ;  
                                     state <= S_WAIT;
                                end if ;
@@ -60,7 +60,7 @@ architecture a3 of it_sqrt is
         end if ;
     end process ;
     
-    COMPUTATION : process(clk,reset) -- combinatory process
+    COMPUTATION : process(clk,reset) -- sync process
     variable div_sig  : signed (2*NBITS-1 downto 0);
     variable SZ_sig   : signed (NBITS+1-1 downto 0);
     variable div      : unsigned(2*NBITS-1 downto 0);
@@ -106,9 +106,9 @@ architecture a3 of it_sqrt is
 
 
             end loop;
-            result <= std_logic_vector(Z(NBITS));
         end if ;
     end process;
+    result <= std_logic_vector(Z(NBITS));
 
 
 end a3;
