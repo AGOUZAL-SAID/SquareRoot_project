@@ -1,7 +1,6 @@
 library ieee ;
 use ieee.std_logic_1164.all ;
 use ieee.numeric_std.all ;
-use ieee.math_real.all;
 entity it_sqrt is
     generic(NBITS : integer := 32) ;
     port (
@@ -20,7 +19,7 @@ architecture a1 of it_sqrt is
     signal D      : unsigned (2*NBITS-1 downto 0 );
     signal Z      : unsigned (NBITS-1 downto 0 );
     signal R      : signed (NBITS+1-1 downto 0 );
-    signal counter : integer range 0 to NBITS;
+    signal counter : integer range 0 to NBITS ;
     begin
     FSM : process(clk,reset) 
     variable div_sig  : signed (2*NBITS-1 downto 0);
@@ -35,17 +34,16 @@ architecture a1 of it_sqrt is
             Z <= to_unsigned(0,NBITS);
             R <= to_signed(0,NBITS+1) ;
             counter <= 0;
+            finished <= '0' ;
         elsif (rising_edge(clk)) then
             case( state ) is
                 when S_WAIT => if (start = '1') then 
-                                state <= S_INT ;
+                                state <= S_COMP ;
                                 end if ;
-                
-                when S_INT  =>  state <= S_COMP ;
                                 D <= unsigned(A);
                                 Z <= to_unsigned(0,NBITS);
                                 R <= to_signed(0,NBITS+1);
-                                counter <= 0;
+                                counter <= 0; -- optional if the num of bits is power of 2
                 
                 when S_COMP =>  div := shift_right(D,2*NBITS-2);
                                 Z_4 := shift_left(Z,2);
@@ -75,11 +73,10 @@ architecture a1 of it_sqrt is
                                     state <= S_FIN ;
                                 end if ;
                 
-                when S_FIN  => finished <=  '1' ;
-                               if (start = '0') then 
+                when S_FIN  =>  finished <=  '1' ; -- depend if the cpu read is sync or async (this is for async)
+                                if (start = '0') then 
                                     finished <= '0' ;  
                                     state <= S_WAIT;
-                                    finished   <= '0' ;
                                end if ;
                 
                 when others => null;
