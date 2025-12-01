@@ -1,7 +1,6 @@
 library ieee ;
 use ieee.std_logic_1164.all ;
 use ieee.numeric_std.all ;
-use ieee.math_real.all;
 entity it_sqrt is
     generic(NBITS : integer := 32) ;
     port (
@@ -15,7 +14,7 @@ entity it_sqrt is
 end entity ;
 
 architecture a2 of it_sqrt is 
-    type T_state  is (S_WAIT,S_INT,S_COMP,S_FIN);
+    type T_state  is (S_WAIT,S_FIN);
 
     subtype register_R is signed(NBITS+1-1 downto 0);
     type pack_register_R is array (0 to NBITS) of register_R;
@@ -31,21 +30,18 @@ architecture a2 of it_sqrt is
     FSM : process(clk,reset) 
     begin
         if (reset='0') then
-            state      <= S_WAIT ; 
+            state      <= S_WAIT ;
+            finished <= '0' ;  
         elsif (rising_edge(clk)) then
             case( state ) is
                 when S_WAIT => if (start = '1') then 
-                                state <= S_INT ;
+                                state <= S_FIN ;
                                 end if ;
-                
-                when S_INT  =>  state <= S_COMP ;             
-                when S_COMP => state <= S_FIN ;
-                
+
                 when S_FIN  => finished <=  '1' ;
                                if (start = '0') then 
                                     finished <= '0' ;  
                                     state <= S_WAIT;
-                                    finished   <= '0' ;
                                end if ;
                 
                 when others => null;
@@ -67,7 +63,7 @@ architecture a2 of it_sqrt is
         Z(0):= to_unsigned(0,NBITS);
         for i in 1 to NBITS-1 loop
             R(i):= to_signed(0,NBITS+1);
-            D(i):= unsigned(A);
+            D(i):= to_unsigned(0,2*NBITS);
             Z(i):= to_unsigned(0,NBITS);
         end loop;
         for i in 0 to NBITS-1 loop

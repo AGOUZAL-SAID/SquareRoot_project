@@ -14,7 +14,7 @@ entity it_sqrt is
 end entity ;
 
 architecture a1 of it_sqrt is 
-    type T_state  is (S_WAIT,S_INT,S_COMP,S_FIN);
+    type T_state  is (S_WAIT,S_COMP,S_FIN);
     signal state  : T_state;
     signal D      : unsigned (2*NBITS-1 downto 0 );
     signal Z      : unsigned (NBITS-1 downto 0 );
