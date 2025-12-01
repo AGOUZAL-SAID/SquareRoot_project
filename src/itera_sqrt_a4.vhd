@@ -58,7 +58,8 @@ architecture a4 of it_sqrt is
                 counter <= 0;
                 E1      <=  to_signed(0,NBITS+1);   
                 E2      <=  to_signed(0,NBITS+1);   
-                sub     <=   '0';      
+                sub     <=   '0';
+                finished <=  '0' ;      
             elsif (rising_edge(clk)) then
             case( state ) is
             
