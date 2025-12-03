@@ -71,9 +71,10 @@ architecture a1 of it_sqrt is
                                 counter <= counter + 1;
                                 if (counter = NBITS-1) then 
                                     state <= S_FIN ;
+                                    finished <=  '1' ;
                                 end if ;
                 
-                when S_FIN  =>  finished <=  '1' ; -- depend if the cpu read is sync or async (this is for async)
+                when S_FIN  =>  
                                 if (start = '0') then 
                                     finished <= '0' ;  
                                     state <= S_WAIT;

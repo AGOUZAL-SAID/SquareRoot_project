@@ -30,7 +30,7 @@ architecture sqrt_TB of TB is
 
 
 
-    constant  N_test  : integer := 5;
+    constant  N_test  : integer := 10;
     constant  PIPE_LINE  : integer := 0;
     signal reset   : std_logic   ;
     signal stop_sim: std_logic   ;
@@ -40,9 +40,9 @@ architecture sqrt_TB of TB is
     signal result  : std_logic_vector  (NBITS-1 downto 0 )   ; 
     signal finished: std_logic   ;   
 
-    type table is array (natural range <>) of unsigned(2*NBITS-1 downto 0);                                                                  
-    constant test : table (0 to N_test-1) := (to_unsigned(3,2*NBITS),to_unsigned(15,2*NBITS),to_unsigned(127,2*NBITS), x"00000000FFFFFFFF",x"FFFFFFFFFFFFFFFF" ) ;
-    constant expected : table (0 to N_test-1) :=(to_unsigned(1,2*NBITS),to_unsigned(3,2*NBITS),to_unsigned(11,2*NBITS),to_unsigned(65535,2*NBITS), x"00000000FFFFFFFF" ) ;
+    type table is array (natural range <>) of unsigned(2*NBITS-1 downto 0);                                                                                                                                                                                                                 
+    constant test : table (0 to N_test-1) := (to_unsigned(3,2*NBITS),to_unsigned(15,2*NBITS),to_unsigned(127,2*NBITS), x"00000000FFFFFFFF",x"FFFFFFFFFFFFFFFF",to_unsigned(1,2*NBITS),to_unsigned(0,2*NBITS),to_unsigned(512,2*NBITS),to_unsigned(5499030,2*NBITS),x"00000002C83360BE" ) ;
+    constant expected : table (0 to N_test-1) :=(to_unsigned(1,2*NBITS),to_unsigned(3,2*NBITS),to_unsigned(11,2*NBITS),to_unsigned(65535,2*NBITS), x"00000000FFFFFFFF",to_unsigned(1,2*NBITS),to_unsigned(0,2*NBITS),to_unsigned(22,2*NBITS),to_unsigned(2345,2*NBITS),to_unsigned(109310,2*NBITS)) ;
     begin 
     UUT : entity work.it_sqrt(a4) 
         generic map(NBITS =>NBITS)
@@ -76,6 +76,7 @@ architecture sqrt_TB of TB is
             start <= '1';
 
             wait  until (finished = '1');
+            wait until rising_edge(clk);
 
 
             if (unsigned(result)= expected(i)) then 
@@ -98,9 +99,6 @@ architecture sqrt_TB of TB is
             A <= std_logic_vector(test(i));
             wait  until  rising_edge(clk);
         end loop;
-        if (finished = '1') then
-            report "testage";
-        end if;
         wait until finished = '1';
         for i in 0 to N_test-1 loop
             wait until  rising_edge(clk);

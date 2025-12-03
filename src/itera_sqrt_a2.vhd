@@ -36,9 +36,10 @@ architecture a2 of it_sqrt is
             case( state ) is
                 when S_WAIT => if (start = '1') then 
                                 state <= S_FIN ;
+                                finished <=  '1' ;
                                 end if ;
 
-                when S_FIN  => finished <=  '1' ;
+                when S_FIN  => 
                                if (start = '0') then 
                                     finished <= '0' ;  
                                     state <= S_WAIT;
