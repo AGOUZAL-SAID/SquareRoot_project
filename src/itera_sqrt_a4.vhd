@@ -14,7 +14,7 @@ entity it_sqrt is
 end entity ;
 
 architecture a4 of it_sqrt is 
-    type T_state  is (S_WAIT,S_COMP1,S_COMP2,S_COMP3,S_COMP4,S_COMP5,S_FIN);
+    type T_state  is (S_WAIT,S_COMP1,S_COMP2,S_FIN);
     signal state   : T_state;
     signal D       : unsigned (2*NBITS-1 downto 0 );
     signal Z       : unsigned (NBITS-1 downto 0 );
@@ -44,11 +44,6 @@ architecture a4 of it_sqrt is
             RES => RES
         );
     FSM : process(clk,reset) 
-        variable div_sig  : signed (2*NBITS-1 downto 0);
-        variable SZ_sig   : signed (NBITS+1-1 downto 0);
-        variable div      : unsigned(2*NBITS-1 downto 0);
-        variable Z_4      : unsigned(NBITS-1 downto 0);
-        variable R_comp   : signed(NBITS+1-1 downto 0);
         begin
             if (reset='0') then
                 state      <= S_WAIT ; 
@@ -69,36 +64,24 @@ architecture a4 of it_sqrt is
                                 R <= to_signed(0,NBITS+1) ;
                                 counter <= 0;
             
-                when S_COMP1 => div     := to_unsigned(0,2*NBITS-2) & D(2*NBITS-1 downto 2*NBITS-2);
-                                div_sig := signed(div);
+                when S_COMP1 => 
                                 state <= S_COMP2;
                                 if (R>=to_signed(0,NBITS+1)) then
                                     sub <= '1';
-                                    E1 <= div_sig(NBITS+1-1 downto 0);
-                                    E2 <= to_signed(1,NBITS+1);
+                                    E1 <=R(NBITS+1-1-2 downto 0) & signed(D(2*NBITS-1 downto 2*NBITS-2));  
+                                    E2 <= signed(b"0" & Z(NBITS-3 downto 0) & b"01");
                                 else 
                                     sub <= '0';
-                                    E1 <= div_sig(NBITS+1-1 downto 0);
-                                    E2 <= to_signed(3,NBITS+1);
+                                    E1 <= R(NBITS+1-1-2 downto 0) & signed(D(2*NBITS-1 downto 2*NBITS-2));
+                                    E2 <= resize(signed(Z(NBITS-3 downto 0) & b"11"),NBITS+1);
                                 end if ;
-                when S_COMP2 => Z_4 :=   Z(NBITS-3 downto 0) & b"00" ;
-                                SZ_sig  := signed(resize(Z_4, NBITS+1));
-                                state  <= S_COMP3;
-                                E1     <= signed(RES);
-                                E2     <= SZ_sig; 
-                when S_COMP3 => state <= S_COMP4;
-                                sub   <= '0';
-                                E1    <= shift_left(R,2) ;
-                                E2    <= signed(RES);
-                when S_COMP4 => E1    <= '0' & signed(Z(NBITS-2 downto 0)) & '0' ;
+
+                when S_COMP2 => R <= signed(RES);
                                 if (signed(RES)>=to_signed(0,NBITS+1)) then 
-                                    E2  <= to_signed(1,NBITS+1);
+                                    Z  <= Z(NBITS-2 downto 0) & '1' ;
                                 else
-                                    E2  <= to_signed(0,NBITS+1);
+                                    Z  <= Z(NBITS-2 downto 0) & '0';
                                 end if;
-                                R <= signed(RES);
-                                state <= S_COMP5;
-                when S_COMP5 => Z <= unsigned(RES(NBITS-1 downto 0));
                                 D <= D(2*NBITS-3 downto 0) & b"00";
                                 counter <= counter + 1;
                                 if (counter = NBITS-1) then 

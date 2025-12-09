@@ -36,7 +36,7 @@ architecture sqrt_TB of TB is
     signal stop_sim: std_logic   ;
     signal clk     : std_logic :='0'   ;
     signal start   : std_logic   ;
-    signal A       : std_logic_vector  (2*NBITS-1 downto 0 ) := x"0000000000000000" ;
+    signal A       : std_logic_vector  (2*NBITS-1 downto 0 ) := std_logic_vector(to_unsigned(0,2*NBITS)) ;
     signal result  : std_logic_vector  (NBITS-1 downto 0 )   ; 
     signal finished: std_logic   ;   
 
@@ -80,13 +80,13 @@ architecture sqrt_TB of TB is
 
 
             if (unsigned(result)= expected(i)) then 
-                report "test number :" & integer'image(i) & " done succesfully" ;
+                report "test number :" & integer'image(i+1) & " done succesfully" ;
                 if (i=N_test-1) then 
                     stop_sim <= '1';
                 end if ;
 
             else
-                report "test number :" & integer'image(i) & " failed";
+                report "test number :" & integer'image(i+1) & " failed";
                 if (i=N_test-1) then 
                     stop_sim <= '1';
                 end if ;

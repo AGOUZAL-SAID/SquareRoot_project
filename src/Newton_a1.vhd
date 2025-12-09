@@ -31,8 +31,8 @@ begin
                 when S_WAIT => if (start = '1') then 
                                 state <= S_COMP ;
                                 end if ;
-                                 if unsigned(A) > x"00000000FFFFFFFF" then
-                                     X_reg <= x"00000000FFFFFFFF";
+                                 if unsigned(A) > ( NBITS downto 1 => '1') then
+                                     X_reg <=   ( NBITS downto 1 => '0') & ( NBITS downto 1 => '1');
                                  else
                                     X_reg <= unsigned(A);
                                 end if;    
