@@ -67,7 +67,7 @@ architecture a4 of it_sqrt is
             
                 when S_COMP1 => 
                                 R <= signed(RES);
-                                if (signed(RES)>=to_signed(0,NBITS+1)) then 
+                                if (signed(RES)>=to_signed(0,NBITS+1)) then -- equivalent to just Z(NBITS-2 downto 0 & not(RES(NBITS)
                                     attache2  :=  '1' ;
                                 else
                                     attache2  := '0';
@@ -97,13 +97,7 @@ architecture a4 of it_sqrt is
     variable attache : unsigned(0 downto 0);
     begin
         E1 <= R(NBITS+1-1-2 downto 0) & signed(D(2*NBITS-1 downto 2*NBITS-2));
-        if (R(NBITS downto NBITS)=to_signed(0,1)) then
-            sub <= '1';
-            attache := b"0" ;
-        else 
-            sub <= '0';
-            attache := b"1";   
-        end if ;
-        E2 <= signed(b"0" & Z(NBITS-3 downto 0) & attache & b"1");
+		  sub <= not(std_logic(R(NBITS)));
+        E2 <= signed(b"0" & Z(NBITS-3 downto 0) & R(NBITS) & b"1");
     end process ; -- alu
 end a4;
