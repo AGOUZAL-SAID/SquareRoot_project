@@ -1,5 +1,5 @@
-SRC = $(wildcard src/*.vhd) tb/sqrt_TB.vhd
-TB = TB
+SRC = $(wildcard avalon_impl/src/*.vhd) avalon_impl/tb/*.vhd
+TB = TB_AV
 SRC_WIN = "/mnt/c/intelFPGA/18.1/src"
 all: sim
 
