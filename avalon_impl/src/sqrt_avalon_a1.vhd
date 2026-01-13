@@ -45,7 +45,7 @@ architecture a1 of sqrt_avalon is
     signal read_av_sig : std_logic ;
 
 begin
-    UUT : entity work.it_sqrt(a1) 
+    sqrt : entity work.it_sqrt(a1) 
     generic map(NBITS =>NBITS)
     port map (
         reset   => reset,
