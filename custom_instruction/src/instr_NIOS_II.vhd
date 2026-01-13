@@ -26,7 +26,7 @@ architecture a1 of instruction is
         );
         end component;
 
-    signal NBITS : integer := 16 ;
+    constant NBITS : integer := 16 ;
 
 
     begin
