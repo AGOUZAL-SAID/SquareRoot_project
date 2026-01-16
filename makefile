@@ -1,4 +1,4 @@
-SRC = $(wildcard custom_instruction/src/*.vhd) $(wildcard avalon_impl/src/*.vhd) $(wildcard src/*.vhd)  custom_instruction/tb/*.vhd
+SRC = $(wildcard sqrt_module/src/*.vhd) $(wildcard custom_instruction/src/*.vhd)   custom_instruction/tb/*.vhd avalon_impl_slave/*.vhd
 TB = TB_INST
 SRC_WIN = "/mnt/c/intelFPGA/18.1/src"
 all: sim

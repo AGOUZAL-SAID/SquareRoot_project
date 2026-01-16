@@ -78,6 +78,7 @@ architecture a4 of it_sqrt is
                                 if (counter = NBITS-1) then 
                                     state <= S_FIN ;
                                     finished <=  '1' ;
+                                    result <= std_logic_vector(Z);
                                 else 
                                     state <= S_COMP1;
                                 end if;
@@ -92,7 +93,6 @@ architecture a4 of it_sqrt is
             end case ;
             end if ;
     end process;
-    result <= std_logic_vector(Z);
     alu_process : process( R,D,Z )
     variable attache : unsigned(0 downto 0);
     begin
