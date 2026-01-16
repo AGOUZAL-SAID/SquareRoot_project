@@ -23,6 +23,7 @@ architecture a4 of it_sqrt is
     signal E2      : signed (NBITS downto 0);
     signal sub     :  std_logic;
     signal RES     : std_logic_vector (NBITS downto 0);
+    signal result_sig  : unsigned (NBITS-1 downto 0 );
     signal counter : integer range 0 to NBITS;
     component alu is 
         generic(NBITS : integer := 32);
@@ -52,6 +53,7 @@ architecture a4 of it_sqrt is
                 D       <= to_unsigned(0,2*NBITS);
                 Z       <= to_unsigned(0,NBITS);
                 R       <= to_signed(0,NBITS+1) ;
+                result_sig <= to_unsigned(0,NBITS);
                 counter <= 0;
                 finished <=  '0' ;      
             elsif (rising_edge(clk)) then
@@ -78,7 +80,7 @@ architecture a4 of it_sqrt is
                                 if (counter = NBITS-1) then 
                                     state <= S_FIN ;
                                     finished <=  '1' ;
-                                    result <= std_logic_vector(Z);
+                                    result_sig <= Z;
                                 else 
                                     state <= S_COMP1;
                                 end if;
@@ -93,6 +95,7 @@ architecture a4 of it_sqrt is
             end case ;
             end if ;
     end process;
+    result <= std_logic_vector(result_sig);
     alu_process : process( R,D,Z )
     variable attache : unsigned(0 downto 0);
     begin

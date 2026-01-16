@@ -36,7 +36,7 @@ architecture a1 of sqrt_slave is
     signal start : std_logic ;
     signal finished : std_logic ;
     signal A        : std_logic_vector(2*NBITS-1 downto 0);
-    signal result   : std_logic_vector (15 downto 0 );
+    signal result   : std_logic_vector (NBITS-1 downto 0 );
     
 begin
     sqrt : entity work.it_sqrt(a1) 
@@ -46,10 +46,10 @@ begin
         clk     => clk,
         start   => start,
         A       => A,
-        result  => read_data_av,
+        result  => result,
         finished=> finished
     );
-    read_data_av <= (15 downto 0 => '0') & result;
+    read_data_av <= std_logic_vector(resize(unsigned(result), 2*NBITS));
     wait_req : process( write_av,read_av,state )
     begin
 
@@ -74,6 +74,7 @@ begin
             case( state ) is
                 when S_WAIT => if (write_av = '1') then 
                                     start <='1';
+                                    A     <= write_data_av; 
                                     state <= S_WRITE;
                                     end if;
                 when S_WRITE => if (finished = '1') then 
